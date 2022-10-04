@@ -1,8 +1,10 @@
 use alienfile;
 use Path::Tiny qw( path );
+use File::Which qw( which );
 
 configure {
   requires 'Path::Tiny';
+  requires 'File::Which';
 };
 
 plugin 'Probe::CommandLine' => (
@@ -33,11 +35,12 @@ share {
     $asset_name = 'ghostunnel-windows-amd64';
   }
 
+  undef $asset_name if $ENV{ALIEN_GHOSTUNNEL_SOURCE};
+
   plugin 'Download::GitHub' => (
     github_user => 'ghostunnel',
     github_repo => 'ghostunnel',
-    asset => 1,
-    $asset_name ? (asset_name  => qr/^$asset_name$/, asset_format => 'f') : (),
+    $asset_name ? (asset => 1, asset_name  => qr/^$asset_name$/, asset_format => 'f') : (),
   );
 
   if($asset_name)
@@ -47,14 +50,25 @@ share {
 
     my @build = (
       '%{make_path} %{.install.prefix}/bin',
-      'ls -ltr',
       "%{cp} %{.install.extract}/$asset_name %{.install.prefix}/bin/$exe",
     );
     push @build, "chmod +x %{.install.prefix}/bin/$exe" unless $^O eq 'MSWin32';
 
     build \@build;
   }
+  elsif(my $go = which('go'))
+  {
+    plugin 'Build::Make' => 'umake';
+    Alien::Build->log("no binary for your platform must build from source");
+    build [
+      '%{make} ghostunnel',
+      '%{make_path} %{.install.prefix}/bin',
+      '%{cp} %{.install.extract}/ghostunnel %{.install.prefix}/bin/ghostunnel',
+    ];
+  }
   else
   {
+    Alien::Build->log("no binary for your platform and no Go compiler");
+    die "no binary for your platform and no Go compiler";
   }
 };

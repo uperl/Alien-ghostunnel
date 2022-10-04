@@ -9,6 +9,8 @@ use Alien::ghostunnel;
 use Env qw( @PATH );
 
 unshift @PATH, Alien::ghostunnel->bin_dir;
+
+system 'ghostunnel', ...;
 ```
 
 # DESCRIPTION

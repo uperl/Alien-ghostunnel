@@ -2,5 +2,5 @@
 
 set -ex
 
-cip exec dzil-cpanm -n Alien::Build::Plugin::Download::GitLab
-cip exec cpanm -n Alien::Build::Plugin::Download::GitLab
+cip exec dzil-cpanm -n Alien::Build::Plugin::Download::GitHub
+cip exec cpanm -n Alien::Build::Plugin::Download::GitHub

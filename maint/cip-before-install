@@ -4,3 +4,7 @@ set -ex
 
 cip exec dzil-cpanm -n Alien::Build Alien::Build::Plugin::Download::GitHub
 cip exec cpanm -n Alien::Build Alien::Build::Plugin::Download::GitHub
+
+if [[ "$CIP_ENV" =~ ALIEN_GHOSTUNNEL_SOURCE ]]; then
+  cip pkg golang
+fi

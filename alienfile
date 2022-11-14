@@ -1,6 +1,10 @@
 use alienfile;
 use Path::Tiny qw( path );
 use File::Which qw( which );
+use Env qw( @PATH );
+
+# The go package for NetBSD does not put go in the path for some reason
+unshift @PATH, '/usr/pkg/go118/bin' if $^O eq 'netbsd' && -d '/usr/pkg/go118/bin' && ! which 'go';
 
 configure {
   requires 'Path::Tiny';
